@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>TREINO 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#0a0d0f;
+  --panel:#14181c;
+  --panel2:#1c2126;
+  --gold:#ffd60a;
+  --red:#d4213d;
+  --white:#f5f5f5;
+  --gray:#8a9199;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;background:var(--black);color:var(--white);font-family:'Inter',sans-serif;overscroll-behavior:none;height:100%;}
+body{padding-bottom:env(safe-area-inset-bottom);}
+h1,h2,h3,.display{font-family:'Anton',sans-serif; letter-spacing:0.5px; text-transform:uppercase;}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;}
+.screen{display:none;flex:1;flex-direction:column;padding:20px 20px 30px;}
+.screen.active{display:flex;}
+
+/* HEADER */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 6px;}
+.logo{display:flex;align-items:center;gap:8px;}
+.logo .num{font-family:'Anton',sans-serif;font-size:28px;color:var(--gold);line-height:1;}
+.logo .txt{font-family:'Anton',sans-serif;font-size:18px;letter-spacing:2px;}
+.goal-badge{background:var(--panel);border:1px solid #2a2f34;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:800;color:var(--gold);}
+.back-link{background:none;border:none;color:var(--gray);font-size:13px;font-weight:800;padding:0 0 10px;text-align:left;width:fit-content;}
+
+/* HOME */
+.intro{color:var(--gray);font-size:13px;margin:2px 0 16px;line-height:1.5;}
+.workout-list{display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
+.wcard{display:flex;align-items:center;gap:14px;background:var(--panel);border:1px solid #22262b;border-radius:16px;padding:14px 16px;cursor:pointer;}
+.wcard:active{background:var(--panel2);}
+.wnum{font-family:'Anton',sans-serif;font-size:22px;color:var(--gold);width:34px;text-align:center;flex-shrink:0;}
+.wsplit{background:var(--panel2);border-radius:8px;padding:4px 9px;font-size:13px;font-weight:800;color:var(--white);flex-shrink:0;}
+.winfo{flex:1;min-width:0;}
+.wtitle{font-size:14px;font-weight:800;}
+.wsub{font-size:12px;color:var(--gray);margin-top:2px;}
+.warrow{color:var(--gray);font-size:18px;flex-shrink:0;}
+
+.btn{border:none;border-radius:14px;padding:16px 20px;font-family:'Anton',sans-serif;font-size:17px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-primary{background:var(--gold);color:#151515;}
+.btn-primary:active{transform:scale(0.98);}
+.btn-ghost{background:transparent;border:1.5px solid #333;color:var(--white);}
+
+/* PROGRESS SEGMENTS (strength) */
+.progress-top{display:flex;gap:6px;padding:0;margin:10px 0 0;}
+.progress-top .seg{flex:1;height:5px;border-radius:3px;background:#22262b;}
+.progress-top .seg.done{background:var(--gold);}
+.progress-top .seg.active{background:var(--red);}
+.progress-label{font-size:13px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:1px;}
+
+/* STRENGTH — free navigation */
+.ex-nav{display:flex;align-items:stretch;gap:8px;flex:1;margin-top:14px;}
+.nav-arrow{background:var(--panel);border:1px solid #22262b;color:var(--gold);border-radius:14px;width:44px;font-family:'Anton',sans-serif;font-size:26px;flex-shrink:0;}
+.nav-arrow:disabled{opacity:0.2;}
+.ex-card{background:var(--panel);border-radius:20px;padding:24px 22px 22px;flex:1;display:flex;flex-direction:column;border:1px solid #22262b;}
+.ex-icon{background:var(--panel2);border-radius:16px;padding:14px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;}
+.ex-icon svg{width:100%;height:auto;max-height:190px;}
+.ex-name{font-family:'Anton',sans-serif;font-size:22px;line-height:1.15;margin:0 0 8px;}
+.ex-target{display:inline-flex;gap:8px;align-items:center;background:rgba(255,214,10,0.12);color:var(--gold);padding:8px 14px;border-radius:10px;font-weight:800;font-size:15px;width:fit-content;margin-bottom:10px;}
+.ex-note{color:var(--gray);font-size:13px;line-height:1.5;flex:1;}
+.yt-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;margin:14px 0 6px;align-self:flex-start;}
+.yt-icon{background:var(--red);color:white;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.btn-complete{background:var(--panel2);border:1.5px solid #333;color:var(--white);margin-top:auto;}
+.btn-complete.is-done{background:var(--gold);color:#151515;border-color:var(--gold);}
+
+/* RUNNING SCREEN */
+.run-screen{justify-content:space-between;}
+.run-progress-header{display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;}
+.run-pct{font-family:'Anton',sans-serif;font-size:34px;color:var(--gold);}
+.run-frac{font-size:13px;color:var(--gray);font-weight:800;}
+.run-overall-bar-wrap{background:#1c2126;border-radius:9px;height:16px;margin:8px 0 4px;overflow:hidden;}
+.run-overall-bar{background:linear-gradient(90deg,#ffd60a,#ff9d0a);height:100%;width:0%;transition:width 0.6s linear;}
+.run-overall-time{text-align:center;color:var(--gray);font-size:12px;margin-bottom:6px;}
+.run-phase{text-align:center;color:var(--gray);font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-top:14px;}
+.run-label{text-align:center;font-family:'Anton',sans-serif;font-size:30px;margin:4px 0 0;}
+.run-speed{text-align:center;margin:20px 0;}
+.run-speed .num{font-family:'Anton',sans-serif;font-size:90px;color:var(--gold);line-height:1;}
+.run-speed .unit{color:var(--gray);font-size:15px;letter-spacing:2px;}
+.run-timer{text-align:center;font-family:'Anton',sans-serif;font-size:52px;letter-spacing:2px;}
+.run-bar-wrap{background:#1c2126;border-radius:8px;height:9px;margin:18px 0 4px;overflow:hidden;}
+.run-bar{background:var(--red);height:100%;width:0%;transition:width 1s linear;}
+.run-next{text-align:center;color:var(--gray);font-size:13px;margin-top:6px;}
+.run-controls{display:flex;gap:10px;margin-top:20px;}
+
+/* DONE SCREEN */
+.done-screen{align-items:center;justify-content:center;text-align:center;}
+.celebrate-icon{width:64px;margin:0 auto 8px;display:block;}
+.done-screen h2{font-size:26px;margin:0 0 8px;}
+.done-screen p{color:var(--gray);font-size:14px;margin:0 0 30px;}
+</style>
+
+  <!-- PUBLICAR: PWA -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#16A34A">
+  <meta name="color-scheme" content="dark light">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Treino">
+  <style>
+    /* PUBLICAR: area segura do iPhone (notch / Dynamic Island) */
+    body { padding-bottom: env(safe-area-inset-bottom); }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- HOME -->
+  <div class="screen active" id="screen-home">
+    <div class="topbar">
+      <div class="logo"><span class="num">7</span><span class="txt">TREINO</span></div>
+      <div class="goal-badge">🎯 3km/18min</div>
+    </div>
+    <h1 style="margin:14px 0 2px;">Escolha o treino</h1>
+    <p class="intro">20 treinos prontos — escolha o de hoje. Seu progresso fica salvo na sua conta e sincroniza entre iPhone e PC. Cada um começa pela corrida (que evolui a cada número) e depois vai pra musculação (Split A → B → C, revezando).</p>
+    <div class="workout-list" id="workoutList"></div>
+  </div>
+
+  <!-- STRENGTH -->
+  <div class="screen" id="screen-strength">
+    <button class="back-link" onclick="goHome()">‹ Lista de treinos</button>
+    <div class="progress-label"><span id="progressCount">0/5</span> concluídos</div>
+    <div class="progress-top" id="strengthProgress"></div>
+    <div class="ex-nav">
+      <button class="nav-arrow" id="navPrev" onclick="navExercise(-1)">‹</button>
+      <div class="ex-card" id="exCard">
+        <div class="ex-icon" id="exIcon"></div>
+        <div class="ex-name" id="exName">Crucifixo no cabo</div>
+        <div class="ex-target" id="exTarget">3 séries x 12 reps</div>
+        <div class="ex-note" id="exNote"></div>
+        <a class="yt-link" id="ytLink" href="#" target="_blank" rel="noopener" aria-label="Ver exemplo no YouTube">
+          <span class="yt-icon">▶</span>
+        </a>
+        <button class="btn btn-complete" id="completeBtn" onclick="toggleComplete()">Marcar como concluído</button>
+      </div>
+      <button class="nav-arrow" id="navNext" onclick="navExercise(1)">›</button>
+    </div>
+  </div>
+
+  <!-- RUNNING -->
+  <div class="screen run-screen" id="screen-running">
+    <div>
+      <button class="back-link" onclick="goHome()">‹ Lista de treinos</button>
+      <div class="run-progress-header"><span class="run-pct" id="runPct">0%</span><span class="run-frac" id="runFrac">Etapa 1/9</span></div>
+      <div class="run-overall-bar-wrap"><div class="run-overall-bar" id="runOverallBar"></div></div>
+      <div class="run-overall-time" id="runOverallTime">00:00 de 24:00</div>
+      <div class="run-phase" id="runPhaseLabel">Fase de corrida 1/7</div>
+      <div class="run-label" id="runLabel">Aquecimento</div>
+      <div class="run-speed"><span class="num" id="runSpeed">5.0</span><div class="unit">KM/H NA ESTEIRA</div></div>
+      <div class="run-timer" id="runTimer">03:00</div>
+      <div class="run-bar-wrap"><div class="run-bar" id="runBar"></div></div>
+      <div class="run-next" id="runNext"></div>
+    </div>
+    <div class="run-controls">
+      <button class="btn btn-ghost" id="pauseBtn" onclick="togglePause()">Pausar</button>
+      <button class="btn btn-ghost" onclick="skipInterval()">Pular</button>
+    </div>
+  </div>
+
+  <!-- DONE -->
+  <div class="screen done-screen" id="screen-done">
+    <svg class="celebrate-icon" viewBox="0 0 100 100" fill="none" stroke="#ffd60a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="50" cy="20" r="9"/>
+      <line x1="50" y1="29" x2="50" y2="62"/>
+      <line x1="50" y1="38" x2="22" y2="14"/>
+      <line x1="50" y1="38" x2="78" y2="14"/>
+      <line x1="50" y1="62" x2="34" y2="90"/>
+      <line x1="50" y1="62" x2="66" y2="90"/>
+    </svg>
+    <h2>Treino concluído</h2>
+    <p id="doneSummary">Corrida + musculação registrados.</p>
+    <button class="btn btn-primary" onclick="goHome()">Voltar à lista</button>
+  </div>
+
+</div>
+
+<script>
+/* ============ ICONS: "INÍCIO -> FIM" pictograms with equipment context ============ */
+const C_START = "#5a6069";
+const C_END = "#ffd60a";
+const C_EQUIP = "#333a41";
+
+function L(x1,y1,x2,y2,w){ return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke-width="${w||5}"/>`; }
+function H(x,y){ return `<circle cx="${x}" cy="${y}" r="8" stroke-width="5"/>`; }
+function DB(x,y,color){ return `<line x1="${x-8}" y1="${y}" x2="${x+8}" y2="${y}" stroke="${color}" stroke-width="4"/><circle cx="${x-8}" cy="${y}" r="4" fill="${color}" stroke="none"/><circle cx="${x+8}" cy="${y}" r="4" fill="${color}" stroke="none"/>`; }
+function body(head,shoulder,hip,armL,armR,legL,legR){
+  let s = H(head[0],head[1]) + L(shoulder[0],shoulder[1],hip[0],hip[1]);
+  if(armL) s += L(shoulder[0],shoulder[1],armL[0][0],armL[0][1]) + L(armL[0][0],armL[0][1],armL[1][0],armL[1][1]);
+  if(armR) s += L(shoulder[0],shoulder[1],armR[0][0],armR[0][1]) + L(armR[0][0],armR[0][1],armR[1][0],armR[1][1]);
+  if(legL) s += L(hip[0],hip[1],legL[0][0],legL[0][1]) + L(legL[0][0],legL[0][1],legL[1][0],legL[1][1]);
+  if(legR) s += L(hip[0],hip[1],legR[0][0],legR[0][1]) + L(legR[0][0],legR[0][1],legR[1][0],legR[1][1]);
+  return s;
+}
+function frame(color,dash,inner){
+  return `<g stroke="${color}" fill="none" stroke-linecap="round" stroke-linejoin="round" ${dash?'stroke-dasharray="6,5" opacity="0.85"':''}>${inner}</g>`;
+}
+function panel(equip,startBody,endBody,dbStart,dbEnd){
+  let out = '';
+  if(equip) out += `<g stroke="${C_EQUIP}" fill="none" stroke-width="4" stroke-linecap="round">${equip}</g>`;
+  out += frame(C_START,true,startBody);
+  if(dbStart) out += dbStart;
+  out += `<g transform="translate(115,0)">`;
+  out += frame(C_END,false,endBody);
+  if(dbEnd) out += dbEnd;
+  out += `</g>`;
+  out += `<line x1="98" y1="55" x2="123" y2="55" stroke="${C_EQUIP}" stroke-width="3"/><line x1="123" y1="55" x2="115" y2="48" stroke="${C_EQUIP}" stroke-width="3"/><line x1="123" y1="55" x2="115" y2="62" stroke="${C_EQUIP}" stroke-width="3"/>`;
+  out += `<text x="48" y="106" fill="${C_START}" font-size="11" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700">INÍCIO</text>`;
+  out += `<text x="163" y="106" fill="${C_END}" font-size="11" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700">FIM</text>`;
+  return `<svg viewBox="0 0 210 112" stroke-width="5">${out}</svg>`;
+}
+
+const ICONS = {
+  cableFly: panel(
+    `${L(10,15,10,90)}${L(90,15,90,90)}<circle cx="10" cy="15" r="4"/><circle cx="90" cy="15" r="4"/>`,
+    body([50,18],[50,26],[50,58],[[28,24],[12,32]],[[72,24],[88,32]],[[45,75],[42,92]],[[55,75],[58,92]]),
+    body([50,18],[50,26],[50,58],[[40,34],[52,40]],[[60,34],[48,40]],[[45,75],[42,92]],[[55,75],[58,92]])
+  ),
+  benchPress: panel(
+    `${L(8,72,92,72,4)}${L(20,72,20,80,4)}${L(80,72,80,80,4)}`,
+    body([22,50],[30,50],[30,50],[[35,42],[35,20]],null,[[55,55],[75,50]],null),
+    body([22,50],[30,50],[30,50],[[35,42],[35,66]],null,[[55,55],[75,50]],null),
+    DB(35,20,C_START), DB(35,66,C_END)
+  ),
+  tricepsPushdown: panel(
+    `${L(50,5,50,20,4)}<circle cx="50" cy="8" r="4"/>`,
+    body([50,18],[50,26],[50,58],[[42,45],[30,30]],null,[[45,75],[42,92]],[[55,75],[58,92]]),
+    body([50,18],[50,26],[50,58],[[42,45],[38,68]],null,[[45,75],[42,92]],[[55,75],[58,92]])
+  ),
+  tricepsFrench: panel(
+    null,
+    body([50,18],[50,26],[50,58],[[30,15],[45,10]],null,[[45,75],[42,92]],[[55,75],[58,92]]),
+    body([50,18],[50,26],[50,58],[[52,20],[52,4]],null,[[45,75],[42,92]],[[55,75],[58,92]]),
+    DB(45,10,C_START), DB(52,4,C_END)
+  ),
+  absCrunch: panel(
+    `${L(5,88,95,88,4)}`,
+    body([78,60],[78,60],[58,68],null,null,[[55,70],[35,88]],[[65,72],[75,88]]),
+    body([58,42],[58,42],[50,60],null,null,[[45,70],[30,88]],[[60,72],[70,88]]) + L(58,42,68,20)
+  ),
+  latPulldown: panel(
+    `${L(20,8,80,8,4)}<circle cx="50" cy="8" r="4"/>`,
+    body([50,20],[50,28],[50,62],[[28,15],[22,10]],[[72,15],[78,10]],[[45,80],[42,95]],[[55,80],[58,95]]),
+    body([50,20],[50,28],[50,62],[[35,38],[38,44]],[[65,38],[62,44]],[[45,80],[42,95]],[[55,80],[58,95]])
+  ),
+  bentRow: panel(
+    null,
+    body([30,32],[30,38],[60,52],[[35,58],[35,80]],null,[[65,68],[65,88]],[[75,60],[85,80]]),
+    body([30,32],[30,38],[60,52],[[42,45],[52,48]],null,[[65,68],[65,88]],[[75,60],[85,80]]),
+    DB(35,80,C_START), DB(52,48,C_END)
+  ),
+  bicepCurl: panel(
+    null,
+    body([50,18],[50,26],[50,58],[[42,45],[38,68]],null,[[45,75],[42,92]],[[55,75],[58,92]]),
+    body([50,18],[50,26],[50,58],[[42,45],[35,28]],null,[[45,75],[42,92]],[[55,75],[58,92]]),
+    DB(38,68,C_START), DB(35,28,C_END)
+  ),
+  plank: panel(
+    `${L(5,92,95,92,4)}`,
+    body([15,60],[20,62],[20,62],[[15,75],[15,90]],null,[[70,64],[92,72]],null) + L(20,62,70,64),
+    body([15,60],[20,62],[20,62],[[15,75],[15,90]],null,[[70,64],[92,72]],null) + L(20,62,70,64)
+  ),
+  legExtension: panel(
+    `${L(15,20,70,20,4)}${L(15,20,15,45,4)}${L(70,20,70,60,4)}`,
+    body([28,12],[28,20],[28,45],null,null,[[28,45],[55,35]],null) + L(55,35,58,72),
+    body([28,12],[28,20],[28,45],null,null,[[28,45],[55,35]],null) + L(55,35,80,38)
+  ),
+  gobletSquat: panel(
+    null,
+    body([50,15],[50,23],[50,48],[[38,32],[35,50]],[[62,32],[65,50]],[[42,68],[40,90]],[[58,68],[60,90]]),
+    body([50,32],[50,40],[50,60],[[38,48],[35,62]],[[62,48],[65,62]],[[38,55],[30,88]],[[62,55],[70,88]]),
+    DB(35,50,C_START), DB(35,62,C_END)
+  ),
+  lunge: panel(
+    null,
+    body([45,15],[45,23],[48,52],[[35,30],[30,40]],[[60,30],[65,40]],[[42,72],[40,92]],[[54,72],[56,92]]),
+    body([45,20],[45,28],[50,55],[[35,35],[30,45]],[[62,35],[68,45]],[[35,68],[22,90]],[[62,65],[80,62]])
+  ),
+  lateralRaise: panel(
+    null,
+    body([50,18],[50,26],[50,58],[[48,45],[46,68]],[[52,45],[54,68]],[[45,75],[42,92]],[[55,75],[58,92]]),
+    body([50,18],[50,26],[50,58],[[20,32],[10,34]],[[80,32],[90,34]],[[45,75],[42,92]],[[55,75],[58,92]]),
+    DB(46,68,C_START)+DB(54,68,C_START), DB(10,34,C_END)+DB(90,34,C_END)
+  ),
+  frontRaise: panel(
+    null,
+    body([50,18],[50,26],[50,58],[[48,45],[46,68]],[[52,45],[54,68]],[[45,75],[42,92]],[[55,75],[58,92]]),
+    body([50,18],[50,26],[50,58],[[42,15],[30,10]],[[58,15],[70,10]],[[45,75],[42,92]],[[55,75],[58,92]]),
+    DB(46,68,C_START)+DB(54,68,C_START), DB(30,10,C_END)+DB(70,10,C_END)
+  )
+};
+
+/* ============ WORKOUT DATA (Split A/B/C — crossover, halteres, máquina com cadeira extensora + voador + barra superior) ============ */
+const WORKOUTS = [
+  { id:'A', name:'Peito & Tríceps', exercises:[
+    {name:'Crucifixo no cabo (crossover ou voador)', sets:'3 séries x 12 reps', icon:'cableFly', note:'Braços levemente flexionados, junte as mãos à frente do peito controlando a volta. Pode usar o crossover ou o voador da máquina — o que estiver livre.'},
+    {name:'Supino reto com halteres', sets:'3 séries x 10 reps', icon:'benchPress', note:'Deite no banco, desça os halteres até a altura do peito e empurre para cima.'},
+    {name:'Tríceps na corda (pulley)', sets:'3 séries x 15 reps', icon:'tricepsPushdown', note:'Cotovelos fixos ao lado do corpo, estenda até quase travar o braço.'},
+    {name:'Tríceps francês com halter', sets:'3 séries x 12 reps', icon:'tricepsFrench', note:'Halter atrás da cabeça, cotovelos apontando para cima, estenda os braços.'},
+    {name:'Abdominal solo', sets:'3 séries x 15 reps', icon:'absCrunch', note:'Mãos atrás da cabeça, suba o tronco contraindo o abdômen, sem puxar o pescoço.'}
+  ]},
+  { id:'B', name:'Costas & Bíceps', exercises:[
+    {name:'Puxada alta (barra superior)', sets:'3 séries x 12 reps', icon:'latPulldown', note:'Puxe a barra até a altura do queixo, cotovelos apontando para baixo.'},
+    {name:'Remada curvada com halteres', sets:'3 séries x 12 reps', icon:'bentRow', note:'Tronco inclinado à frente, puxe os halteres em direção à cintura.'},
+    {name:'Rosca direta com halteres', sets:'3 séries x 12 reps', icon:'bicepCurl', note:'Cotovelos fixos ao lado do corpo, suba os halteres sem balançar o tronco.'},
+    {name:'Rosca alternada com halteres', sets:'3 séries x 12 reps (cada braço)', icon:'bicepCurl', note:'Alterne os braços, gire o punho para fora ao subir.'},
+    {name:'Prancha isométrica', sets:'3 séries x 40 segundos', icon:'plank', note:'Corpo alinhado dos ombros aos pés, abdômen contraído.'}
+  ]},
+  { id:'C', name:'Pernas & Ombros', exercises:[
+    {name:'Cadeira extensora', sets:'3 séries x 15 reps', icon:'legExtension', note:'Estenda as pernas até quase travar o joelho, desça controlado.'},
+    {name:'Agachamento goblet com halter', sets:'3 séries x 12 reps', icon:'gobletSquat', note:'Halter junto ao peito, agache mantendo as costas retas.'},
+    {name:'Afundo (passada) com halteres', sets:'3 séries x 10 reps (cada perna)', icon:'lunge', note:'Um passo à frente, desça até o joelho de trás quase tocar o chão.'},
+    {name:'Elevação lateral com halteres', sets:'3 séries x 15 reps', icon:'lateralRaise', note:'Suba os braços até a altura dos ombros, cotovelos levemente flexionados.'},
+    {name:'Elevação frontal com halteres', sets:'3 séries x 12 reps', icon:'frontRaise', note:'Suba os halteres à frente do corpo até a altura dos ombros.'}
+  ]}
+];
+
+/* ============ RUNNING PROGRESSION — 20 treinos, sempre que possível 5/8/11/14 km/h ============ */
+function runBucket(n){
+  if(n<3) return 0;
+  if(n<6) return 1;
+  if(n<9) return 2;
+  if(n<12) return 3;
+  if(n<15) return 4;
+  if(n<18) return 5;
+  return 6;
+}
+function getRunPlan(n){
+  const warm = {speed:5, dur:180, label:'Aquecimento', phase:'Caminhe'};
+  const cool = {speed:5, dur:180, label:'Desaquecimento', phase:'Caminhe'};
+  const b = runBucket(n);
+  let mid = [];
+  if(b===0){ for(let i=0;i<6;i++){ mid.push({speed:8,dur:60,label:'Corrida',phase:'Corra'}); mid.push({speed:5,dur:120,label:'Caminhada',phase:'Caminhe'}); } }
+  else if(b===1){ for(let i=0;i<6;i++){ mid.push({speed:8,dur:90,label:'Corrida',phase:'Corra'}); mid.push({speed:5,dur:90,label:'Caminhada',phase:'Caminhe'}); } }
+  else if(b===2){ for(let i=0;i<5;i++){ mid.push({speed:8,dur:180,label:'Corrida',phase:'Corra'}); mid.push({speed:5,dur:60,label:'Caminhada',phase:'Caminhe'}); } }
+  else if(b===3){ for(let i=0;i<4;i++){ mid.push({speed:11,dur:180,label:'Corrida forte',phase:'Corra'}); mid.push({speed:5,dur:90,label:'Caminhada',phase:'Caminhe'}); } }
+  else if(b===4){ mid.push({speed:8,dur:900,label:'Corrida contínua',phase:'Corra'}); }
+  else if(b===5){ mid.push({speed:11,dur:900,label:'Corrida contínua',phase:'Corra'}); mid.push({speed:14,dur:60,label:'Tiro final',phase:'Corra forte'}); }
+  else { mid.push({speed:11,dur:1080,label:'Corrida contínua — Meta 3km/18min',phase:'Corra'}); mid.push({speed:14,dur:90,label:'Tiro final',phase:'Corra forte'}); }
+  return [warm, ...mid, cool];
+}
+function stageDescription(n){
+  const b = runBucket(n);
+  const texts = [
+    'Intervalado leve: 1min a 8km/h / 2min caminhada a 5km/h',
+    'Intervalado: 1min30 a 8km/h / 1min30 caminhada a 5km/h',
+    'Intervalado: 3min a 8km/h / 1min caminhada a 5km/h',
+    'Intervalado forte: 3min a 11km/h / 1min30 caminhada a 5km/h',
+    'Corrida contínua de 15min a 8km/h',
+    'Corrida contínua de 15min a 11km/h + tiro final a 14km/h',
+    'Meta: 18min a 11km/h (~3,3km) + tiro final a 14km/h'
+  ];
+  return texts[b];
+}
+
+/* ============ 20 TREINOS FIXOS ============ */
+const WORKOUT_PLAN = [];
+for(let i=0;i<20;i++){
+  WORKOUT_PLAN.push({ number:i+1, splitId:['A','B','C'][i%3], runIdx:i });
+}
+
+/* ============ ESTADO PERSISTENTE (local primeiro, nuvem depois) ============
+   Grava no aparelho na hora - funciona sem sinal na academia.
+   Sobe para o Firestore quando houver internet e login.
+   Conflito entre aparelhos: vence o mais recente (carimbo de tempo).
+*/
+const PB = (function () {
+  const CHAVE = 'treino:estado';
+  const VAZIO = {
+    v: 2,
+    atual: null,          // { number, splitId, runIdx } do treino em andamento
+    completed: [],        // exercicios marcados no treino atual
+    exIdx: 0,             // exercicio em que parou
+    runIdx: 0,            // intervalo da corrida em que parou
+    runRestante: 0,       // segundos restantes do intervalo
+    fase: null,           // 'corrida' | 'forca' | null
+    historico: [],        // [{ number, splitId, em }]
+    ts: 0,
+  };
+
+  let estado = clonar(VAZIO);
+  let pendente = null;
+  let nuvem = null;       // preenchido por conectarNuvem()
+
+  function clonar(o) { return JSON.parse(JSON.stringify(o)); }
+
+  function valido(e) {
+    return e && typeof e === 'object'
+      && Array.isArray(e.completed) && Array.isArray(e.historico);
+  }
+
+  function carregarLocal() {
+    try {
+      const bruto = localStorage.getItem(CHAVE);
+      if (!bruto) return;
+      const e = JSON.parse(bruto);
+      if (valido(e)) {
+        estado = Object.assign(clonar(VAZIO), e);
+      } else {
+        // Dado corrompido nao pode impedir a abertura do app.
+        localStorage.removeItem(CHAVE);
+      }
+    } catch (err) {
+      try { localStorage.removeItem(CHAVE); } catch (e2) { /* modo privado */ }
+    }
+  }
+
+  function gravarLocal() {
+    try {
+      localStorage.setItem(CHAVE, JSON.stringify(estado));
+    } catch (err) {
+      // Safari em navegacao privada bloqueia. O app segue funcionando
+      // na memoria; so nao sobrevive ao fechamento.
+      console.warn('nao foi possivel gravar no aparelho');
+    }
+  }
+
+  /** Grava agora no aparelho e agenda o envio para a nuvem. */
+  function salvar(parcial) {
+    if (parcial) Object.assign(estado, parcial);
+    estado.ts = Date.now();
+    gravarLocal();
+    if (nuvem) {
+      clearTimeout(pendente);
+      pendente = setTimeout(() => {
+        nuvem.enviar(clonar(estado)).catch(() => { /* tenta na proxima */ });
+      }, 1200);
+    }
+  }
+
+  /** Une local e remoto: vence o carimbo mais recente; historico soma. */
+  function unir(local, remoto) {
+    if (!valido(remoto)) return local;
+    const base = (remoto.ts || 0) > (local.ts || 0) ? clonar(remoto) : clonar(local);
+    const vistos = new Set();
+    base.historico = [...(local.historico || []), ...(remoto.historico || [])]
+      .filter((h) => {
+        const k = h.number + '|' + h.em;
+        if (vistos.has(k)) return false;
+        vistos.add(k);
+        return true;
+      })
+      .sort((a, b) => String(a.em).localeCompare(String(b.em)));
+    return base;
+  }
+
+  function conectarNuvem(api) {
+    nuvem = api;
+    return api.buscar()
+      .then((remoto) => {
+        estado = unir(estado, remoto);
+        gravarLocal();
+        salvar();                 // devolve a versao unida
+        return estado;
+      })
+      .catch(() => estado);       // sem internet: segue com o local
+  }
+
+  carregarLocal();
+
+  return {
+    get: () => estado,
+    salvar,
+    conectarNuvem,
+    registrarConclusao(number, splitId) {
+      estado.historico.push({ number, splitId, em: new Date().toISOString() });
+      salvar({ atual: null, completed: [], exIdx: 0, runIdx: 0, fase: null });
+    },
+    limpar() {
+      estado = clonar(VAZIO);
+      gravarLocal();
+      salvar();
+    },
+  };
+})();
+
+let currentWorkout = null;
+let currentExerciseIndex = 0;
+let completed = [];
+let runIntervals = [];
+let runIdx = 0;
+let runRemaining = 0;
+let runPaused = false;
+let wakeLock = null;
+let runIntervalTimer = null;
+let audioCtx = null;
+
+/* ============ NAVIGATION ============ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function goHome(){
+  if(runIntervalTimer){ clearInterval(runIntervalTimer); runIntervalTimer=null; }
+  if(currentWorkout && PB.get().fase === 'corrida') salvarPosicaoCorrida();
+  releaseWakeLock();
+  showScreen('screen-home');
+}
+
+/* ============ HOME: lista de 20 treinos ============ */
+function renderHome(){
+  const wrap = document.getElementById('workoutList');
+  wrap.innerHTML = '';
+  WORKOUT_PLAN.forEach((p,i)=>{
+    const w = WORKOUTS.find(x=>x.id===p.splitId);
+    const card = document.createElement('div');
+    card.className = 'wcard';
+    card.onclick = ()=>selectWorkout(i);
+    card.innerHTML = `
+      <div class="wnum">${p.number}</div>
+      <div class="wsplit">${p.splitId}</div>
+      <div class="winfo">
+        <div class="wtitle">Corrida fase ${runBucket(p.runIdx)+1}/7 + ${w.name}</div>
+        <div class="wsub">${stageDescription(p.runIdx)}</div>
+      </div>
+      <div class="warrow">›</div>`;
+    wrap.appendChild(card);
+  });
+}
+function selectWorkout(i){
+  currentWorkout = WORKOUT_PLAN[i];
+  PB.salvar({ atual: currentWorkout, fase: 'corrida', completed: [], exIdx: 0, runIdx: 0 });
+  ensureAudio();
+  startRunningForWorkout();
+}
+
+/* Reabre exatamente onde parou: mesmo treino, mesma fase, mesma posicao. */
+function retomarSePossivel(){
+  const e = PB.get();
+  if(!e.atual || !e.fase) return false;
+  const plano = WORKOUT_PLAN.find(p => p.number === e.atual.number);
+  if(!plano) return false;
+  currentWorkout = plano;
+  if(e.fase === 'forca'){
+    const w = WORKOUTS.find(x => x.id === currentWorkout.splitId);
+    completed = (e.completed && e.completed.length === w.exercises.length)
+      ? e.completed.slice() : w.exercises.map(()=>false);
+    currentExerciseIndex = Math.min(e.exIdx || 0, w.exercises.length - 1);
+    renderStrength();
+    showScreen('screen-strength');
+    requestWakeLock();
+    setupSwipe();
+  } else {
+    runIntervals = getRunPlan(currentWorkout.runIdx);
+    runIdx = Math.min(e.runIdx || 0, runIntervals.length - 1);
+    runPaused = true;
+    document.getElementById('runPhaseLabel').textContent =
+      `Fase de corrida ${runBucket(currentWorkout.runIdx)+1}/7 — Treino ${currentWorkout.number}`;
+    loadRunInterval();
+    if(e.runRestante > 0) runRemaining = e.runRestante;
+    updateRunBar();
+    const pb = document.getElementById('pauseBtn');
+    if(pb) pb.textContent = 'Continuar';
+    showScreen('screen-running');
+  }
+  return true;
+}
+
+/* ============ RUNNING ============ */
+function startRunningForWorkout(){
+  runIntervals = getRunPlan(currentWorkout.runIdx);
+  runIdx = 0;
+  runPaused = false;
+  document.getElementById('runPhaseLabel').textContent = `Fase de corrida ${runBucket(currentWorkout.runIdx)+1}/7 — Treino ${currentWorkout.number}`;
+  loadRunInterval();
+  showScreen('screen-running');
+  requestWakeLock();
+  if(runIntervalTimer) clearInterval(runIntervalTimer);
+  runIntervalTimer = setInterval(tickRun, 1000);
+}
+function totalRunSeconds(){ return runIntervals.reduce((a,c)=>a+c.dur,0); }
+function elapsedRunSeconds(){
+  let elapsed = 0;
+  for(let i=0;i<runIdx;i++) elapsed += runIntervals[i].dur;
+  elapsed += (runIntervals[runIdx].dur - runRemaining);
+  return elapsed;
+}
+function fmtMS(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,'0');
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+function salvarPosicaoCorrida(){
+  PB.salvar({ fase: 'corrida', runIdx: runIdx, runRestante: runRemaining });
+}
+function loadRunInterval(){
+  const cur = runIntervals[runIdx];
+  runRemaining = cur.dur;
+  document.getElementById('runLabel').textContent = cur.label;
+  document.getElementById('runSpeed').textContent = cur.speed.toFixed(1);
+  updateRunBar();
+  const next = runIntervals[runIdx+1];
+  document.getElementById('runNext').textContent = next ? `Em seguida: ${next.label} a ${next.speed.toFixed(1)} km/h` : 'Última etapa — depois disso, corrida concluída';
+}
+function updateRunBar(){
+  const cur = runIntervals[runIdx];
+  const pct = 100 - (runRemaining / cur.dur * 100);
+  document.getElementById('runBar').style.width = pct + '%';
+  document.getElementById('runTimer').textContent = fmtMS(runRemaining);
+
+  const total = totalRunSeconds();
+  const elapsed = elapsedRunSeconds();
+  const overallPct = Math.round(elapsed/total*100);
+  document.getElementById('runOverallBar').style.width = overallPct + '%';
+  document.getElementById('runPct').textContent = overallPct + '%';
+  document.getElementById('runFrac').textContent = `Etapa ${runIdx+1}/${runIntervals.length}`;
+  document.getElementById('runOverallTime').textContent = `${fmtMS(elapsed)} de ${fmtMS(total)}`;
+}
+function tickRun(){
+  if(runPaused) return;
+  runRemaining--;
+  if(runRemaining>0 && runRemaining<=3){
+    beep(500 + (4-runRemaining)*130, 110, 0.22);
+  }
+  if(runRemaining <= 0){
+    if(navigator.vibrate) navigator.vibrate([200,100,200]);
+    beep(880,200,0.3);
+    setTimeout(()=>beep(1175,220,0.3),170);
+    if(runIdx < runIntervals.length - 1){
+      runIdx++;
+      loadRunInterval();
+      salvarPosicaoCorrida();
+    } else {
+      clearInterval(runIntervalTimer);
+      finishRun();
+    }
+  } else {
+    updateRunBar();
+  }
+}
+function togglePause(){
+  setTimeout(salvarPosicaoCorrida, 0);
+  runPaused = !runPaused;
+  document.getElementById('pauseBtn').textContent = runPaused ? 'Retomar' : 'Pausar';
+}
+function skipInterval(){
+  setTimeout(salvarPosicaoCorrida, 0);
+  if(runIdx < runIntervals.length - 1){
+    runIdx++;
+    loadRunInterval();
+  } else {
+    clearInterval(runIntervalTimer);
+    finishRun();
+  }
+}
+function finishRun(){
+  releaseWakeLock();
+  startStrengthForWorkout();
+}
+
+/* ============ ÁUDIO (bipes de contagem, sem voz) ============ */
+function ensureAudio(){
+  try{
+    if(!audioCtx){ audioCtx = new (window.AudioContext||window.webkitAudioContext)(); }
+    if(audioCtx.state === 'suspended') audioCtx.resume();
+  }catch(e){}
+}
+function beep(freq,dur,vol){
+  try{
+    if(!audioCtx) return;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.frequency.value = freq;
+    o.type = 'sine';
+    g.gain.value = vol || 0.25;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    setTimeout(()=>{ try{ o.stop(); }catch(e){} }, dur);
+  }catch(e){}
+}
+
+/* ============ STRENGTH: navegação livre + conclusão independente ============ */
+function startStrengthForWorkout(){
+  const w = WORKOUTS.find(x=>x.id===currentWorkout.splitId);
+  completed = w.exercises.map(()=>false);
+  currentExerciseIndex = 0;
+  PB.salvar({ fase: 'forca', completed: completed.slice(), exIdx: 0 });
+  renderStrength();
+  showScreen('screen-strength');
+  requestWakeLock();
+  setupSwipe();
+}
+function renderStrength(){
+  const w = WORKOUTS.find(x=>x.id===currentWorkout.splitId);
+  const idx = currentExerciseIndex;
+  const ex = w.exercises[idx];
+  document.getElementById('exIcon').innerHTML = ICONS[ex.icon];
+  document.getElementById('exName').textContent = ex.name;
+  document.getElementById('exTarget').textContent = ex.sets;
+  document.getElementById('exNote').textContent = ex.note;
+  document.getElementById('ytLink').href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' como fazer execução');
+
+  const doneCount = completed.filter(Boolean).length;
+  document.getElementById('progressCount').textContent = `${doneCount}/${w.exercises.length}`;
+
+  const bar = document.getElementById('strengthProgress');
+  bar.innerHTML = '';
+  w.exercises.forEach((e,i)=>{
+    const seg = document.createElement('div');
+    seg.className = 'seg' + (completed[i] ? ' done' : (i===idx ? ' active' : ''));
+    bar.appendChild(seg);
+  });
+
+  const cbtn = document.getElementById('completeBtn');
+  cbtn.textContent = completed[idx] ? 'Concluído ✓ (toque para desmarcar)' : 'Marcar como concluído';
+  cbtn.classList.toggle('is-done', completed[idx]);
+
+  document.getElementById('navPrev').disabled = idx === 0;
+  document.getElementById('navNext').disabled = idx === w.exercises.length - 1;
+}
+function navExercise(dir){
+  const w = WORKOUTS.find(x=>x.id===currentWorkout.splitId);
+  const target = currentExerciseIndex + dir;
+  if(target < 0 || target >= w.exercises.length) return;
+  currentExerciseIndex = target;
+  PB.salvar({ exIdx: currentExerciseIndex });
+  renderStrength();
+}
+function toggleComplete(){
+  const idx = currentExerciseIndex;
+  completed[idx] = !completed[idx];
+  PB.salvar({ completed: completed.slice(), exIdx: idx, fase: 'forca' });
+  renderStrength();
+  if(completed[idx] && completed.every(Boolean)){
+    finishWorkout();
+  }
+}
+function setupSwipe(){
+  const card = document.getElementById('exCard');
+  if(card.dataset.swipeBound) return;
+  card.dataset.swipeBound = '1';
+  let startX = 0, startY = 0;
+  card.addEventListener('touchstart', e=>{
+    startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+  }, {passive:true});
+  card.addEventListener('touchend', e=>{
+    const dx = e.changedTouches[0].clientX - startX;
+    const dy = e.changedTouches[0].clientY - startY;
+    if(Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy)*1.5){
+      navExercise(dx < 0 ? 1 : -1);
+    }
+  }, {passive:true});
+}
+
+/* ============ CONCLUSÃO ============ */
+function finishWorkout(){
+  const w = WORKOUTS.find(x=>x.id===currentWorkout.splitId);
+  document.getElementById('doneSummary').textContent = `Treino ${currentWorkout.number}: corrida (fase ${runBucket(currentWorkout.runIdx)+1}/7) + ${w.name} concluídos.`;
+  PB.registrarConclusao(currentWorkout.number, currentWorkout.splitId);
+  showScreen('screen-done');
+  releaseWakeLock();
+}
+
+/* ============ WAKE LOCK ============ */
+async function requestWakeLock(){
+  try{
+    if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); }
+  }catch(e){}
+}
+function releaseWakeLock(){
+  try{ if(wakeLock){ wakeLock.release(); wakeLock = null; } }catch(e){}
+}
+document.addEventListener('visibilitychange', async ()=>{
+  if(document.visibilityState === 'hidden'){
+    // iOS pode encerrar o app em segundo plano sem aviso: grava agora.
+    if(currentWorkout && PB.get().fase === 'corrida') salvarPosicaoCorrida();
+  }
+  if(wakeLock !== null && document.visibilityState === 'visible'){
+    await requestWakeLock();
+  }
+});
+window.addEventListener('pagehide', ()=>{
+  if(currentWorkout && PB.get().fase === 'corrida') salvarPosicaoCorrida();
+});
+
+/* ============ INIT ============ */
+renderHome();
+if(!retomarSePossivel()){
+  showScreen('screen-home');
+}
+
+/* Sincroniza com a nuvem quando o login acontecer (modulo auth-gate). */
+window.addEventListener('pb:login', async ()=>{
+  try{
+    const { lerEstado, gravarEstado } = await import('./assets/js/nuvem.js');
+    await PB.conectarNuvem({ buscar: lerEstado, enviar: gravarEstado });
+    renderHome();
+  }catch(e){ /* offline ou modulo ausente: segue no local */ }
+});
+</script>
+
+  <!-- PUBLICAR: registro do Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function (e) {
+          console.warn('SW nao registrado:', e);
+        });
+      });
+    }
+  </script>
+  <script type="module" src="./assets/js/auth-gate.js"></script>
+</body>
+</html>
