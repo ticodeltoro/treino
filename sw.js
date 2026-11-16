@@ -1,6 +1,6 @@
 // Service Worker - treino
-// Gerado pela skill PUBLICAR. Versao: 1
-const CACHE = 'treino-v1';
+// Gerado pela skill PUBLICAR. Versao: 3
+const CACHE = 'treino-v3';
 const PRECACHE = [
   "./",
   "./index.html",

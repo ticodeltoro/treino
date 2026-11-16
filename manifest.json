@@ -1,13 +1,13 @@
 {
   "name": "Treino",
   "short_name": "Treino",
-  "description": "Treino — aplicativo pessoal",
+  "description": "Treino de musculação, dieta e receitas",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0A0F0D",
-  "theme_color": "#16A34A",
+  "background_color": "#14072B",
+  "theme_color": "#14072B",
   "lang": "pt-BR",
   "icons": [
     {
